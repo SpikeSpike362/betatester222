@@ -9,6 +9,7 @@
         <helpers:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
         <helpers:NonEmptyStringToVisibilityConverter x:Key="NonEmptyToVisConverter"/>
         <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
+        <helpers:SelectedCategoryVisibilityConverter x:Key="SelectedCategoryVisibilityConverter"/>
 
         <DataTemplate x:Key="DebloatCardTemplate">
             <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="18" Margin="0,0,0,8"
