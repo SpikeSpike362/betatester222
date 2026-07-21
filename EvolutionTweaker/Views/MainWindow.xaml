@@ -1,0 +1,89 @@
+<Window x:Class="EvolutionTweaker.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Evolution Tweaker" 
+        Height="720" Width="1100"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border Background="{StaticResource BackgroundBrush}" 
+            BorderBrush="{StaticResource BorderBrush}" 
+            BorderThickness="1" CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}" 
+                    BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+                <DockPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20,0,0,0" DockPanel.Dock="Left">
+                        <TextBlock Text="EVOLUTION" FontSize="13" FontWeight="Bold"
+                                   Foreground="{StaticResource TextBrush}"/>
+                        <TextBlock Text=" TWEAKER" FontSize="13" FontWeight="Light"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                        <Button Content="🌐" Style="{StaticResource TitleBarButtonStyle}"
+                                Click="LanguageButton_Click" ToolTip="Язык"/>
+                        <Button Content="ℹ" Style="{StaticResource TitleBarButtonStyle}"
+                                Click="AboutButton_Click" ToolTip="О программе"/>
+                        <Button Content="—" Style="{StaticResource TitleBarButtonStyle}"
+                                Click="MinimizeButton_Click" ToolTip="Свернуть"/>
+                        <Button Content="□" Style="{StaticResource TitleBarButtonStyle}"
+                                Click="MaximizeButton_Click" ToolTip="Развернуть"/>
+                        <Button Content="✕" Style="{StaticResource TitleBarCloseButtonStyle}"
+                                Click="CloseButton_Click" ToolTip="Закрыть"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,20" HorizontalAlignment="Center">
+                            <TextBlock Text="👤" FontSize="24" HorizontalAlignment="Center" 
+                                       ToolTip="{Binding Greeting}"/>
+                        </StackPanel>
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
+                            <StackPanel Margin="0,20,0,0">
+                                <Button Style="{StaticResource NavButtonStyle}" Content="🏠" FontSize="20"
+                                        Width="60" Height="50" HorizontalContentAlignment="Center"
+                                        ToolTip="Главная" Command="{Binding NavigateCommand}" CommandParameter="dashboard"/>
+                                <Button Style="{StaticResource NavButtonStyle}" Content="⚡" FontSize="20"
+                                        Width="60" Height="50" HorizontalContentAlignment="Center"
+                                        ToolTip="Оптимизация" Command="{Binding NavigateCommand}" CommandParameter="optimization"/>
+                                <Button Style="{StaticResource NavButtonStyle}" Content="🔧" FontSize="20"
+                                        Width="60" Height="50" HorizontalContentAlignment="Center"
+                                        ToolTip="Инструменты" Command="{Binding NavigateCommand}" CommandParameter="tools"/>
+
+                                <Border Margin="10,16,10,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"/>
+
+                                <Button Style="{StaticResource NavButtonStyle}" Content="⚙" FontSize="20"
+                                        Width="60" Height="50" HorizontalContentAlignment="Center"
+                                        ToolTip="Настройки" Command="{Binding NavigateCommand}" CommandParameter="settings"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
+
+                <Grid Grid.Column="1">
+                    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"
+                           Background="{StaticResource BackgroundBrush}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

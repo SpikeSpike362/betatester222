@@ -1,0 +1,123 @@
+<Page x:Class="EvolutionTweaker.Pages.DashboardPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Style="{StaticResource PageStyle}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,28" MaxWidth="900">
+
+            <!-- БЛОК: ПРИВЕТСТВИЕ + ВЕРСИЯ + КНОПКА -->
+            <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="24" Margin="0,0,0,0">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
+                        <TextBlock FontSize="16" FontWeight="SemiBold">
+                            <Run Text="Привет, "/>
+                            <Run Text="{Binding UserName, Mode=OneWay}"/>
+                            <Run Text="!"/>
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                            <TextBlock Text="Версия: " Foreground="{StaticResource TextSecondaryBrush}" FontSize="13"/>
+                            <TextBlock Text="{Binding VersionStatus}" Foreground="{StaticResource GreenBrush}" 
+                                       FontWeight="SemiBold" FontSize="13"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button DockPanel.Dock="Right" 
+                            Style="{StaticResource PrimaryButtonStyle}" 
+                            Content="Начать оптимизацию  →"
+                            Command="{Binding NavigateToOptimizationCommand}"
+                            HorizontalAlignment="Right" 
+                            VerticalAlignment="Center"
+                            Padding="24,12"
+                            FontSize="14"/>
+                </DockPanel>
+            </Border>
+
+            <!-- БЛОК: ИНСТРУМЕНТЫ -->
+            <StackPanel Margin="0,28,0,0">
+                <DockPanel Margin="0,0,0,14">
+                    <TextBlock DockPanel.Dock="Left" Text="Инструменты" 
+                               FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" 
+                            Style="{StaticResource BaseButtonStyle}" 
+                            Content="посмотреть все ›"
+                            Command="{Binding NavigateToToolsCommand}"
+                            Background="Transparent" BorderThickness="0"
+                            Foreground="{StaticResource TextSecondaryBrush}"
+                            Padding="12,6" FontSize="12"/>
+                </DockPanel>
+
+                <ItemsControl ItemsSource="{Binding QuickTools}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8"
+                                    Padding="18" Margin="0,0,12,12" Width="200" Height="100"
+                                    Cursor="Hand">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Icon}" FontSize="28" Margin="0,0,0,8"/>
+                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="15"/>
+                                    <TextBlock Text="{Binding Subtitle}" 
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontSize="11" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <!-- БЛОК: НОВОСТИ -->
+            <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="24" Margin="0,16,0,0">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock Text="Новости:" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                            <TextBlock Text="{Binding LatestNewsDate}" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="   " FontSize="15"/>
+                            <TextBlock Text="{Binding LatestNewsTitle}" FontSize="15" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button DockPanel.Dock="Bottom" 
+                            Style="{StaticResource BaseButtonStyle}" 
+                            Content="Перейти  →"
+                            HorizontalAlignment="Left"
+                            Padding="16,8" Margin="0,12,0,0"
+                            FontSize="12"/>
+
+                    <ItemsControl ItemsSource="{Binding NewsItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Margin="0,2,0,0" FontSize="13">
+                                    <Run Text="—  " Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    <Run Text="{Binding Mode=OneWay}"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+
+            <!-- БЛОК: СОВЕТЫ -->
+            <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="24" Margin="0,16,0,24">
+                <StackPanel>
+                    <TextBlock Text="ℹ  Советы и подсказки" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
+                    <TextBlock Text="{Binding CurrentTip}" TextWrapping="Wrap"
+                               Foreground="{StaticResource TextSecondaryBrush}" FontSize="13"
+                               LineHeight="20"/>
+                    <Button Style="{StaticResource BaseButtonStyle}" 
+                            Content="Еще совет  ›"
+                            HorizontalAlignment="Left"
+                            Padding="16,8" Margin="0,14,0,0"
+                            FontSize="12"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
