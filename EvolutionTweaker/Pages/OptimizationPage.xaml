@@ -5,6 +5,7 @@
       xmlns:material="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
       Style="{StaticResource PageStyle}">
     <Page.Resources>
+        <SolidColorBrush x:Key="NavSelectedBrush" Color="#26262B"/>
         <helpers:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
         <helpers:NonEmptyStringToVisibilityConverter x:Key="NonEmptyToVisConverter"/>
         <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
@@ -75,9 +76,23 @@
                     <ItemsControl ItemsSource="{Binding Categories}" Margin="10,0">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Style="{StaticResource NavButtonStyle}" Content="{Binding Name}"
-                                        Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                        CommandParameter="{Binding}"/>
+                                <Grid>
+                                    <!-- Заливка только у выбранной категории -->
+                                    <Border CornerRadius="6" Margin="0,2" IsHitTestVisible="False"
+                                            Background="{StaticResource NavSelectedBrush}">
+                                        <Border.Visibility>
+                                            <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
+                                                <Binding/>
+                                                <Binding Path="DataContext.SelectedCategory"
+                                                        RelativeSource="{RelativeSource AncestorType=Page}"/>
+                                            </MultiBinding>
+                                        </Border.Visibility>
+                                    </Border>
+                                    <!-- Кнопка поверх: прозрачна в покое, при наведении даёт свою обводку -->
+                                    <Button Style="{StaticResource NavButtonStyle}" Content="{Binding Name}"
+                                            Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                            CommandParameter="{Binding}"/>
+                                </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
