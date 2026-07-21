@@ -8,10 +8,17 @@
         AllowsTransparency="True"
         Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
-
+            <WindowChrome.WindowChrome>
+                <WindowChrome CaptionHeight="40"
+                          ResizeBorderThickness="6"
+                          GlassFrameThickness="0"
+                          CornerRadius="0"
+                          UseAeroCaptionButtons="False"/>
+            </WindowChrome.WindowChrome>
     <Border Background="{StaticResource BackgroundBrush}" 
             BorderBrush="{StaticResource BorderBrush}" 
             BorderThickness="1" CornerRadius="8">
+            
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
@@ -30,14 +37,19 @@
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
                         <Button Content="🌐" Style="{StaticResource TitleBarButtonStyle}"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
                                 Click="LanguageButton_Click" ToolTip="Язык"/>
                         <Button Content="ℹ" Style="{StaticResource TitleBarButtonStyle}"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
                                 Click="AboutButton_Click" ToolTip="О программе"/>
                         <Button Content="—" Style="{StaticResource TitleBarButtonStyle}"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
                                 Click="MinimizeButton_Click" ToolTip="Свернуть"/>
                         <Button Content="□" Style="{StaticResource TitleBarButtonStyle}"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
                                 Click="MaximizeButton_Click" ToolTip="Развернуть"/>
                         <Button Content="✕" Style="{StaticResource TitleBarCloseButtonStyle}"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
                                 Click="CloseButton_Click" ToolTip="Закрыть"/>
                     </StackPanel>
                 </DockPanel>
