@@ -1,13 +1,13 @@
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace EvolutionTweaker.Helpers;
 
 /// <summary>
-/// Плавное раскрытие/сворачивание по высоте с обрезкой краем (аналог CSS grid 0fr→1fr + overflow:hidden).
-/// Контент внутри НЕ должен быть Collapsed — он всегда в разметке со своей естественной высотой.
-/// Usage:  <Border helpers:SmoothExpander.IsExpanded="{Binding IsExpanded}" Height="0" ClipToBounds="True" .../>
+/// Плавное раскрытие/сворачивание по высоте с обрезкой краем.
+/// Usage: <Border helpers:SmoothExpander.IsExpanded="{Binding IsExpanded}" Height="0" ClipToBounds="True" .../>
 /// </summary>
 public static class SmoothExpander
 {
@@ -31,7 +31,6 @@ public static class SmoothExpander
     {
         if (d is not FrameworkElement el) return;
         el.ClipToBounds = true;
-
         if ((bool)e.NewValue) Expand(el);
         else Collapse(el);
     }
@@ -39,22 +38,15 @@ public static class SmoothExpander
     private static void Expand(FrameworkElement el)
     {
         var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
-        double from = el.ActualHeight;                       // текущая визуальная высота (без прыжков при быстром клике)
-        double width = el.ActualWidth > 0 ? el.ActualWidth : double.PositiveInfinity;
-
-        // измеряем истинную желаемую высоту (Height на время = NaN, иначе DesiredSize зажмётся текущим Height)
-        el.Height = double.NaN;
-        el.Measure(new Size(width, double.PositiveInfinity));
-        double target = el.DesiredSize.Height;
+        double from = el.ActualHeight;                 // текущая визуальная высота — стартуем плавно даже посреди анимации
+        double target = MeasureContentHeight(el);      // измеряем БЕЗ изменения Height → нет мелькания
         if (double.IsNaN(target) || target <= 0) target = from;
-
-        el.Height = from;                                    // возвращаем, чтобы не мелькнул полный контент до старта анимации
 
         var anim = new DoubleAnimation(from, target, GetDuration(el)) { EasingFunction = ease };
         anim.Completed += (s, e) =>
         {
             el.BeginAnimation(FrameworkElement.HeightProperty, null);
-            el.Height = double.NaN;                          // после раскрытия — Auto, чтобы текст корректно переносился при ресайзе окна
+            el.Height = double.NaN;                    // Auto — чтобы текст переносился при ресайзе окна
         };
         el.BeginAnimation(FrameworkElement.HeightProperty, anim);
     }
@@ -63,7 +55,6 @@ public static class SmoothExpander
     {
         var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
         double from = el.ActualHeight;
-
         var anim = new DoubleAnimation(from, 0, GetDuration(el)) { EasingFunction = ease };
         anim.Completed += (s, e) =>
         {
@@ -71,5 +62,28 @@ public static class SmoothExpander
             el.Height = 0;
         };
         el.BeginAnimation(FrameworkElement.HeightProperty, anim);
+    }
+
+    /// <summary>
+    /// Измеряет желаемую высоту ВНУТРЕННЕГО контента, не меняя Height самого элемента.
+    /// Это убирает мелькание при быстром клике (раньше ставили Height=NaN для измерения).
+    /// </summary>
+    private static double MeasureContentHeight(FrameworkElement el)
+    {
+        if (el is Border border && border.Child is FrameworkElement child)
+        {
+            double padV = border.Padding.Top + border.Padding.Bottom
+                        + border.BorderThickness.Top + border.BorderThickness.Bottom;
+            double availW = border.ActualWidth > 0
+                ? border.ActualWidth - border.Padding.Left - border.Padding.Right
+                  - border.BorderThickness.Left - border.BorderThickness.Right
+                : double.PositiveInfinity;
+            child.Measure(new Size(availW, double.PositiveInfinity));
+            return child.DesiredSize.Height + padV;
+        }
+        // фолбэк (элемент не Border)
+        double width = el.ActualWidth > 0 ? el.ActualWidth : double.PositiveInfinity;
+        el.Measure(new Size(width, double.PositiveInfinity));
+        return el.DesiredSize.Height;
     }
 }

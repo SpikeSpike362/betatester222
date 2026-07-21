@@ -171,14 +171,16 @@
                                                         Command="{Binding DataContext.ToggleExpandCommand, RelativeSource={RelativeSource AncestorType=Page}}" CommandParameter="{Binding}">
                                                     <Button.Template>
                                                         <ControlTemplate TargetType="Button">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="{Binding Info.Name}" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
-                                                                <Grid Width="12" Height="12" Margin="6,0,0,0" VerticalAlignment="Center">
-                                                                    <Path Data="M 0,0 L 6,6 L 12,0" Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.5" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                                        <Path.RenderTransform><RotateTransform x:Name="arrowRotation" Angle="0" CenterX="6" CenterY="3"/></Path.RenderTransform>
-                                                                    </Path>
-                                                                </Grid>
-                                                            </StackPanel>
+                                                            <Border Background="Transparent" Padding="2,10" Margin="-2,-10">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding Info.Name}" FontWeight="SemiBold" FontSize="14" Foreground="{StaticResource TextBrush}" VerticalAlignment="Center"/>
+                                                                    <Grid Width="14" Height="14" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                                        <Path Data="M 0,0 L 7,7 L 14,0" Stroke="{StaticResource TextSecondaryBrush}" StrokeThickness="1.8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                            <Path.RenderTransform><RotateTransform x:Name="arrowRotation" Angle="0" CenterX="7" CenterY="3.5"/></Path.RenderTransform>
+                                                                        </Path>
+                                                                    </Grid>
+                                                                </StackPanel>
+                                                            </Border>
                                                             <ControlTemplate.Triggers>
                                                                 <DataTrigger Binding="{Binding IsExpanded}" Value="True">
                                                                     <DataTrigger.EnterActions><BeginStoryboard><Storyboard>
