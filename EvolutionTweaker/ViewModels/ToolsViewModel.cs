@@ -6,10 +6,10 @@ public partial class ToolsViewModel : ObservableObject
 {
     public ToolItem[] Tools { get; } = new[]
     {
-        new ToolItem("Store", "Магазин приложений", "🛒", true),
-        new ToolItem("LatencyTest", "PC Latency Test", "📊", true),
-        new ToolItem("InternetTest", "Тест интернета", "🌐", true),
-        new ToolItem("AppsOptimization", "Apps Optimization", "🎯", true),
+        new ToolItem("Store", "Магазин приложений", "Cart", true),
+        new ToolItem("LatencyTest", "PC Latency Test", "Timer", true),
+        new ToolItem("InternetTest", "Тест интернета", "Web", true),
+        new ToolItem("AppsOptimization", "Apps Optimization", "Target", true),
     };
 }
 

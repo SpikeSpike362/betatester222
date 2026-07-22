@@ -45,3 +45,17 @@ public class SelectedCategoryVisibilityConverter : IMultiValueConverter
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         => throw new NotImplementedException();
 }
+public class SelectedCategoryBrushConverter : IMultiValueConverter
+{
+    private static readonly System.Windows.Media.Brush Active =
+        new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Black);
+    static SelectedCategoryBrushConverter() => Active.Freeze();
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    {
+        bool selected = values != null && values.Length >= 2 && values[0] != null && Equals(values[0], values[1]);
+        if (selected) return Active;
+        return Application.Current.TryFindResource("TextSecondaryBrush") ?? System.Windows.Media.Brushes.White;
+    }
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}
