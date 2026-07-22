@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Material.Icons;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EvolutionTweaker.Models;
@@ -57,11 +58,15 @@ public partial class OptimizationViewModel : ObservableObject
         _engine = engine; _pending = pending; _debloat = debloat;
         Categories = new List<CategoryInfo>
         {
-            new("basic","Базовое",TweakCategory.Basic), new("security","Безопасность",TweakCategory.Security),
-            new("customization","Кастомизация",TweakCategory.Customization), new("nvidia","Панель Nvidia",TweakCategory.NvidiaPanel),
-            new("power","Электропитание",TweakCategory.Power), new("debloat","Выпиливание",TweakCategory.Debloat),
-            new("cleaning","Очистка",TweakCategory.Cleaning), new("privacy","Приватность",TweakCategory.Privacy),
-            new("tweaks","Твики",TweakCategory.Tweaks),
+            new("basic","Базовое",MaterialIconKind.Wrench,TweakCategory.Basic),
+            new("security","Безопасность",MaterialIconKind.ShieldLockOutline,TweakCategory.Security),
+            new("customization","Кастомизация",MaterialIconKind.TagOutline,TweakCategory.Customization),
+            new("nvidia","Панель Nvidia",MaterialIconKind.Monitor,TweakCategory.NvidiaPanel),
+            new("power","Электропитание",MaterialIconKind.Flash,TweakCategory.Power),
+            new("debloat","Выпиливание",MaterialIconKind.ContentCut,TweakCategory.Debloat),
+            new("cleaning","Очистка",MaterialIconKind.TrashCanOutline,TweakCategory.Cleaning),
+            new("privacy","Приватность",MaterialIconKind.AccountOutline,TweakCategory.Privacy),
+            new("tweaks","Твики",MaterialIconKind.ViewGridOutline,TweakCategory.Tweaks),
         };
         foreach (var t in engine.GetAll()) _all[t.Info.Id] = new TweakItemViewModel(t, pending);
         SelectedCategory = Categories.First();
@@ -172,5 +177,5 @@ public partial class OptimizationViewModel : ObservableObject
     private async Task RefreshAllAsync() { foreach (var vm in _all.Values) await vm.RefreshStateAsync(); }
 }
 
-public record CategoryInfo(string Id, string Name, TweakCategory Category);
+public record CategoryInfo(string Id, string Name, MaterialIconKind Icon, TweakCategory Category);
 public record PendingTweakPreview(string Icon, string Name, string Warning, string Action);

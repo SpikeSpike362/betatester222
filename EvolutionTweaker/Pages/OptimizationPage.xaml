@@ -5,11 +5,12 @@
       xmlns:material="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
       Style="{StaticResource PageStyle}">
     <Page.Resources>
-        <SolidColorBrush x:Key="NavSelectedBrush" Color="#26262B"/>
+        <SolidColorBrush x:Key="NavSelectedBrush" Color="#FFFFFF"/>
         <helpers:BoolToVisibilityConverter x:Key="BoolToVisConverter"/>
         <helpers:NonEmptyStringToVisibilityConverter x:Key="NonEmptyToVisConverter"/>
         <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisConverter"/>
         <helpers:SelectedCategoryVisibilityConverter x:Key="SelectedCategoryVisibilityConverter"/>
+        <helpers:SelectedCategoryBrushConverter x:Key="SelectedCategoryBrushConverter"/>
 
         <DataTemplate x:Key="DebloatCardTemplate">
             <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="18" Margin="0,0,0,8"
@@ -90,9 +91,29 @@
                                         </Border.Visibility>
                                     </Border>
                                     <!-- Кнопка поверх: прозрачна в покое, при наведении даёт свою обводку -->
-                                    <Button Style="{StaticResource NavButtonStyle}" Content="{Binding Name}"
+                                    <Button Style="{StaticResource NavButtonStyle}"
                                             Command="{Binding DataContext.SelectCategoryCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <material:MaterialIcon Kind="{Binding Icon}" Width="18" Height="18"
+                                                                Margin="0,0,12,0" VerticalAlignment="Center">
+                                                <material:MaterialIcon.Foreground>
+                                                    <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                        <Binding/>
+                                                        <Binding Path="DataContext.SelectedCategory" RelativeSource="{RelativeSource AncestorType=Page}"/>
+                                                    </MultiBinding>
+                                                </material:MaterialIcon.Foreground>
+                                            </material:MaterialIcon>
+                                            <TextBlock Text="{Binding Name}" FontSize="14" VerticalAlignment="Center">
+                                                <TextBlock.Foreground>
+                                                    <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                        <Binding/>
+                                                        <Binding Path="DataContext.SelectedCategory" RelativeSource="{RelativeSource AncestorType=Page}"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Foreground>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -158,7 +179,8 @@
                                   Visibility="{Binding IsDebloatCategory, Converter={StaticResource InverseBoolToVisConverter}}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="18" Margin="0,0,0,10">
+                                <Border helpers:StaggeredReveal.Enabled="True"
+                                    Background="{StaticResource SurfaceBrush}" CornerRadius="8" Padding="18" Margin="0,0,0,10">
                                     <StackPanel>
                                         <DockPanel>
                                             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">

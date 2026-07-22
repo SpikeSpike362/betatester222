@@ -84,10 +84,11 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
                             <StackPanel Margin="0,20,0,0">
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="60" Height="50"
-                                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
+                                        HorizontalAlignment="Center" Padding="0"
+                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Главная" Command="{Binding NavigateCommand}" CommandParameter="dashboard">
-                                    <Grid Width="48" Height="40">
+                                    <Grid Margin="6">
                                         <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
                                             <Border.Visibility>
                                                 <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
@@ -108,10 +109,11 @@
                                     </Grid>
                                 </Button>
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="60" Height="50"
-                                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
+                                        HorizontalAlignment="Center" Padding="0"
+                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Оптимизация" Command="{Binding NavigateCommand}" CommandParameter="optimization">
-                                    <Grid Width="48" Height="40">
+                                    <Grid Margin="6">
                                         <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
                                             <Border.Visibility>
                                                 <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
@@ -132,10 +134,11 @@
                                     </Grid>
                                 </Button>
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="60" Height="50"
-                                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
+                                        HorizontalAlignment="Center" Padding="0"
+                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Инструменты" Command="{Binding NavigateCommand}" CommandParameter="tools">
-                                    <Grid Width="48" Height="40">
+                                    <Grid Margin="6">
                                         <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
                                             <Border.Visibility>
                                                 <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
@@ -156,12 +159,13 @@
                                     </Grid>
                                 </Button>
 
-                                <Border Margin="10,16,10,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"/>
+                                <Border Margin="14,16,14,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"/>
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="60" Height="50"
-                                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
+                                        HorizontalAlignment="Center" Padding="0"
+                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Настройки" Command="{Binding NavigateCommand}" CommandParameter="settings">
-                                    <Grid Width="48" Height="40">
+                                    <Grid Margin="6">
                                         <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
                                             <Border.Visibility>
                                                 <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">

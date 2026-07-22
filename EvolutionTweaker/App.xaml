@@ -19,6 +19,26 @@
             <SolidColorBrush x:Key="AccentBrush" Color="#FFFFFF"/>
             <SolidColorBrush x:Key="AccentHoverBrush" Color="#D0D0D0"/>
             <SolidColorBrush x:Key="GreenBrush" Color="#4ADE80"/>
+                <Style TargetType="ToolTip">
+                <Setter Property="Background" Value="#1C1C1C"/>
+                <Setter Property="Foreground" Value="#FFFFFF"/>
+                <Setter Property="BorderBrush" Value="#2A2A2A"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="8,5"/>
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ToolTip">
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <SolidColorBrush x:Key="RedBrush" Color="#F87171"/>
             <SolidColorBrush x:Key="YellowBrush" Color="#FBBF24"/>
 
