@@ -6,10 +6,7 @@ using System.Windows.Media.Animation;
 
 namespace EvolutionTweaker.Helpers;
 
-/// <summary>
-/// Плавное появление элемента при загрузке: сдвиг по вертикали + прозрачность,
-/// с задержкой по порядковому номеру среди соседей (эффект волны при смене списка).
-/// </summary>
+/// <summary>Плавное появление элементов списка «лесенкой» (fade + сдвиг снизу).</summary>
 public static class StaggeredReveal
 {
     public static readonly DependencyProperty EnabledProperty =
@@ -22,18 +19,18 @@ public static class StaggeredReveal
 
     public static readonly DependencyProperty StepProperty =
         DependencyProperty.RegisterAttached(
-            "Step", typeof(TimeSpan), typeof(StaggeredReveal),
-            new PropertyMetadata(TimeSpan.FromMilliseconds(35)));
+            "Step", typeof(double), typeof(StaggeredReveal),
+            new PropertyMetadata(45.0)); // мс между элементами
 
-    public static TimeSpan GetStep(DependencyObject o) => (TimeSpan)o.GetValue(StepProperty);
-    public static void SetStep(DependencyObject o, TimeSpan v) => o.SetValue(StepProperty, v);
+    public static double GetStep(DependencyObject o) => (double)o.GetValue(StepProperty);
+    public static void SetStep(DependencyObject o, double v) => o.SetValue(StepProperty, v);
 
     private static void OnEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is not FrameworkElement el) return;
         if ((bool)e.NewValue)
         {
-            el.Opacity = 0;
+            el.Opacity = 0;                 // гасим сразу, чтобы не мелькало до Loaded
             el.Loaded += OnLoaded;
         }
         else
@@ -47,37 +44,42 @@ public static class StaggeredReveal
         if (sender is not FrameworkElement el) return;
         el.Loaded -= OnLoaded;
 
-        int index = ResolveIndex(el);
-        var delay = TimeSpan.FromMilliseconds(Math.Max(0, index) * GetStep(el).TotalMilliseconds);
+        int index = Math.Min(GetIndex(el), 14);          // cap, чтобы длинный список не «полз» вечно
+        double step = GetStep(el);
+        var delay = TimeSpan.FromMilliseconds(index * step);
 
-        if (el.RenderTransform is not TranslateTransform)
-            el.RenderTransform = new TranslateTransform(0, 8);
+        var tr = new TranslateTransform(0, 12);
+        el.RenderTransform = tr;
+        el.Opacity = 0;
 
-        var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
-        var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(260)) { BeginTime = delay, EasingFunction = ease };
-        var slide = new DoubleAnimation(8, 0, TimeSpan.FromMilliseconds(260)) { BeginTime = delay, EasingFunction = ease };
-        fade.Completed += (s, args) => el.Opacity = 1;
-
+        var fade = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(320))
+        {
+            BeginTime = delay,
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+        var slide = new DoubleAnimation(12, 0, TimeSpan.FromMilliseconds(360))
+        {
+            BeginTime = delay,
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
         el.BeginAnimation(UIElement.OpacityProperty, fade);
-        if (el.RenderTransform is TranslateTransform tt)
-            tt.BeginAnimation(TranslateTransform.YProperty, slide);
+        tr.BeginAnimation(TranslateTransform.YProperty, slide);
     }
 
-    private static int ResolveIndex(FrameworkElement el)
+    private static int GetIndex(DependencyObject el)
     {
-        try
+        DependencyObject child = el;
+        DependencyObject? parent = VisualTreeHelper.GetParent(el);
+        while (parent != null && parent is not Panel)
         {
-            DependencyObject? cur = el;
-            DependencyObject? prev = null;
-            for (int i = 0; i < 4 && cur != null; i++)
-            {
-                prev = cur;
-                cur = VisualTreeHelper.GetParent(cur);
-                if (cur is Panel panel && prev != null)
-                    return panel.Children.IndexOf((UIElement)prev);
-            }
+            child = parent;
+            parent = VisualTreeHelper.GetParent(parent);
         }
-        catch { }
-        return -1;
+        if (parent is Panel panel && child is UIElement u)
+        {
+            int i = panel.Children.IndexOf(u);
+            if (i >= 0) return i;
+        }
+        return 0;
     }
 }

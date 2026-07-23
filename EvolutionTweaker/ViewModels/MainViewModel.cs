@@ -1,6 +1,6 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using EvolutionTweaker.Helpers;
+using CommunityToolkit.Mvvm.Input;
 using EvolutionTweaker.Services;
 
 namespace EvolutionTweaker.ViewModels;
@@ -13,6 +13,8 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _greeting = string.Empty;
     [ObservableProperty] private int _pendingCount;
     [ObservableProperty] private string _activeSection = "dashboard";
+    [ObservableProperty] private bool _isSidebarExpanded;
+    [RelayCommand] private void ToggleSidebar() => IsSidebarExpanded = !IsSidebarExpanded;
 
     public MainViewModel(
         SettingsService settings,

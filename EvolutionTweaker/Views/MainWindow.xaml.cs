@@ -73,6 +73,16 @@ public partial class MainWindow : Window
         about.ShowDialog();
     }
 
+    private void Sidebar_MouseEnter(object sender, MouseEventArgs e)
+    {
+        if (DataContext is MainViewModel vm) vm.IsSidebarExpanded = true;
+    }
+
+    private void Sidebar_MouseLeave(object sender, MouseEventArgs e)
+    {
+        if (DataContext is MainViewModel vm) vm.IsSidebarExpanded = false;
+    }
+    
     private void LanguageButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not Button button) return;

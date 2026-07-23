@@ -23,11 +23,49 @@
     <Window.Resources>
         <helpers:SelectedCategoryVisibilityConverter x:Key="SelectedCategoryVisibilityConverter"/>
         <helpers:SelectedCategoryBrushConverter x:Key="SelectedCategoryBrushConverter"/>
+
+        <!-- Подпись пункта: в свёрнутом виде шириной 0 и без левого отступа,
+             при наведении на сайдбар — выезжает вместе с отступом 14. -->
+        <Style x:Key="SidebarLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MaxWidth" Value="0"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="MaxWidth" To="150" Duration="0:0:0.25">
+                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.2" BeginTime="0:0:0.08"/>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="14,0,0,0" Duration="0:0:0.25"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.1"/>
+                                <DoubleAnimation Storyboard.TargetProperty="MaxWidth" To="0" Duration="0:0:0.18" BeginTime="0:0:0.05">
+                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseIn"/></DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <ThicknessAnimation Storyboard.TargetProperty="Margin" To="0" Duration="0:0:0.15"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Border Background="{StaticResource BackgroundBrush}"
             BorderBrush="{StaticResource BorderBrush}"
-            BorderThickness="1" CornerRadius="8">
+            BorderThickness="1" CornerRadius="8"
+            UseLayoutRounding="True" SnapsToDevicePixels="True">
 
         <Grid>
             <Grid.RowDefinitions>
@@ -35,6 +73,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- TITLE BAR -->
             <Border Grid.Row="0" Background="{StaticResource SurfaceBrush}"
                     BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
                 <DockPanel>
@@ -67,123 +106,245 @@
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Background="{StaticResource SurfaceBrush}"
-                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+                <!-- САЙДБАР: раскрывается по наведению мыши (MouseEnter/Leave),
+                     ширина анимируется 80 ↔ 200. Кнопки-гамбургера больше нет. -->
+                <Border Grid.Column="0" Width="80"
+                        Background="{StaticResource SurfaceBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0"
+                        MouseEnter="Sidebar_MouseEnter"
+                        MouseLeave="Sidebar_MouseLeave">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSidebarExpanded}" Value="True">
+                                    <DataTrigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="200" Duration="0:0:0.25">
+                                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Width" To="80" Duration="0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+
                     <DockPanel>
-                        <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,20" HorizontalAlignment="Center">
+                        <!-- Аватар внизу -->
+                        <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,16" HorizontalAlignment="Center">
                             <material:MaterialIcon Kind="AccountCircleOutline" Width="26" Height="26"
                                                    HorizontalAlignment="Center"
                                                    Foreground="{StaticResource TextSecondaryBrush}"
                                                    ToolTip="{Binding Greeting}"/>
                         </StackPanel>
 
+                        <!-- Навигация -->
                         <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Top">
-                            <StackPanel Margin="0,20,0,0">
+                            <StackPanel Margin="0,12,0,0">
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
-                                        HorizontalAlignment="Center" Padding="0"
-                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                <!-- Главная -->
+                                <Button Style="{StaticResource NavButtonStyle}" Height="48"
+                                        Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Главная" Command="{Binding NavigateCommand}" CommandParameter="dashboard">
-                                    <Grid Margin="6">
-                                        <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
-                                            <Border.Visibility>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </Border.Visibility>
-                                        </Border>
-                                        <material:MaterialIcon Kind="HomeOutline" Width="22" Height="22"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <material:MaterialIcon.Foreground>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </material:MaterialIcon.Foreground>
-                                        </material:MaterialIcon>
-                                    </Grid>
+                                    <Border CornerRadius="10" Padding="10,7"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Margin" Value="18,0"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                                        <Setter Property="Margin" Value="12,0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False" Margin="-10,-7">
+                                                <Border.Visibility>
+                                                    <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
+                                                        <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                        <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                    </MultiBinding>
+                                                </Border.Visibility>
+                                            </Border>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <material:MaterialIcon Kind="HomeOutline" Width="22" Height="22">
+                                                    <material:MaterialIcon.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </material:MaterialIcon.Foreground>
+                                                </material:MaterialIcon>
+                                                <TextBlock Text="Главная" Style="{StaticResource SidebarLabelStyle}">
+                                                    <TextBlock.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
                                 </Button>
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
-                                        HorizontalAlignment="Center" Padding="0"
-                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                <!-- Оптимизация -->
+                                <Button Style="{StaticResource NavButtonStyle}" Height="48"
+                                        Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Оптимизация" Command="{Binding NavigateCommand}" CommandParameter="optimization">
-                                    <Grid Margin="6">
-                                        <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
-                                            <Border.Visibility>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </Border.Visibility>
-                                        </Border>
-                                        <material:MaterialIcon Kind="Speedometer" Width="22" Height="22"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <material:MaterialIcon.Foreground>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </material:MaterialIcon.Foreground>
-                                        </material:MaterialIcon>
-                                    </Grid>
+                                    <Border CornerRadius="10" Padding="10,7"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Margin" Value="18,0"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                                        <Setter Property="Margin" Value="12,0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False" Margin="-10,-7">
+                                                <Border.Visibility>
+                                                    <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
+                                                        <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                        <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                    </MultiBinding>
+                                                </Border.Visibility>
+                                            </Border>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <material:MaterialIcon Kind="Speedometer" Width="22" Height="22">
+                                                    <material:MaterialIcon.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </material:MaterialIcon.Foreground>
+                                                </material:MaterialIcon>
+                                                <TextBlock Text="Оптимизация" Style="{StaticResource SidebarLabelStyle}">
+                                                    <TextBlock.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
                                 </Button>
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
-                                        HorizontalAlignment="Center" Padding="0"
-                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                <!-- Инструменты -->
+                                <Button Style="{StaticResource NavButtonStyle}" Height="48"
+                                        Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Инструменты" Command="{Binding NavigateCommand}" CommandParameter="tools">
-                                    <Grid Margin="6">
-                                        <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
-                                            <Border.Visibility>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </Border.Visibility>
-                                        </Border>
-                                        <material:MaterialIcon Kind="ViewGridOutline" Width="22" Height="22"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <material:MaterialIcon.Foreground>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </material:MaterialIcon.Foreground>
-                                        </material:MaterialIcon>
-                                    </Grid>
+                                    <Border CornerRadius="10" Padding="10,7"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Margin" Value="18,0"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                                        <Setter Property="Margin" Value="12,0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False" Margin="-10,-7">
+                                                <Border.Visibility>
+                                                    <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
+                                                        <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                        <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                    </MultiBinding>
+                                                </Border.Visibility>
+                                            </Border>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <material:MaterialIcon Kind="ViewGridOutline" Width="22" Height="22">
+                                                    <material:MaterialIcon.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </material:MaterialIcon.Foreground>
+                                                </material:MaterialIcon>
+                                                <TextBlock Text="Инструменты" Style="{StaticResource SidebarLabelStyle}">
+                                                    <TextBlock.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
                                 </Button>
 
-                                <Border Margin="14,16,14,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"/>
+                                <Border Margin="14,12,14,8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1"/>
 
-                                <Button Style="{StaticResource NavButtonStyle}" Width="56" Height="50"
-                                        HorizontalAlignment="Center" Padding="0"
-                                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                <!-- Настройки -->
+                                <Button Style="{StaticResource NavButtonStyle}" Height="48"
+                                        Padding="0" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                                         ToolTip="Настройки" Command="{Binding NavigateCommand}" CommandParameter="settings">
-                                    <Grid Margin="6">
-                                        <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False">
-                                            <Border.Visibility>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </Border.Visibility>
-                                        </Border>
-                                        <material:MaterialIcon Kind="CogOutline" Width="22" Height="22"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <material:MaterialIcon.Foreground>
-                                                <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
-                                                    <Binding Path="ActiveSection"/>
-                                                    <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
-                                                </MultiBinding>
-                                            </material:MaterialIcon.Foreground>
-                                        </material:MaterialIcon>
-                                    </Grid>
+                                    <Border CornerRadius="10" Padding="10,7"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Margin" Value="18,0"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.IsSidebarExpanded, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                                        <Setter Property="Margin" Value="12,0"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid>
+                                            <Border CornerRadius="10" Background="#FFFFFF" IsHitTestVisible="False" Margin="-10,-7">
+                                                <Border.Visibility>
+                                                    <MultiBinding Converter="{StaticResource SelectedCategoryVisibilityConverter}">
+                                                        <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                        <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                    </MultiBinding>
+                                                </Border.Visibility>
+                                            </Border>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <material:MaterialIcon Kind="CogOutline" Width="22" Height="22">
+                                                    <material:MaterialIcon.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </material:MaterialIcon.Foreground>
+                                                </material:MaterialIcon>
+                                                <TextBlock Text="Настройки" Style="{StaticResource SidebarLabelStyle}">
+                                                    <TextBlock.Foreground>
+                                                        <MultiBinding Converter="{StaticResource SelectedCategoryBrushConverter}">
+                                                            <Binding Path="DataContext.ActiveSection" RelativeSource="{RelativeSource AncestorType=Window}"/>
+                                                            <Binding Path="CommandParameter" RelativeSource="{RelativeSource AncestorType=Button}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Foreground>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
                                 </Button>
 
                             </StackPanel>
@@ -191,8 +352,10 @@
                     </DockPanel>
                 </Border>
 
+                <!-- КОНТЕНТ -->
                 <Grid Grid.Column="1">
                     <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"
+                           helpers:PageTransition.Enabled="True"
                            Background="{StaticResource BackgroundBrush}"/>
                 </Grid>
             </Grid>

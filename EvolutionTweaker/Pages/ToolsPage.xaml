@@ -18,8 +18,7 @@
                     <DataTemplate>
                         <Border CornerRadius="12" Cursor="Hand"
                                 Width="280" Height="132" Margin="0,0,16,16"
-                                RenderTransformOrigin="0.5,0.5"
-                                ClipToBounds="True">
+                                RenderTransformOrigin="0.5,0.5" ClipToBounds="True">
                             <Border.RenderTransform>
                                 <ScaleTransform/>
                             </Border.RenderTransform>
